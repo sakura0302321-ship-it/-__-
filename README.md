@@ -1,4 +1,5 @@
-IIIF　デジタルアーカイブ：デモ
+IIIF　デジタルアーカイブ：デモ![Uploading スクリーンショット 2026-03-06 143158.png…]()
+
 
 概要：
 画像資料に対して、国際標準規格である IIIF (International Image Interoperability Framework) に準拠した高精度な注釈（アノテーション）を付与・閲覧できるデジタルアーカイブのデモです。
