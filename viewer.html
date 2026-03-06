@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>IIIFアノテーション保存ツール</title>
+  <style>
+    body { font-family: sans-serif; background: #222; color: white; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+    .toolbar { background: #333; padding: 15px; border-bottom: 1px solid #555; text-align: center; }
+    .canvas-container { flex: 1; position: relative; overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding: 20px; }
+    canvas { background: white; border: 5px solid #fff; cursor: crosshair; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; margin: 5px; }
+    button:hover { background: #218838; }
+    input[type="text"] { padding: 10px; font-size: 16px; width: 250px; border-radius: 5px; border: none; }
+    .msg { color: #ffeb3b; margin-top: 5px; font-size: 14px; }
+    .counter { font-weight: bold; font-size: 18px; color: #00ff00; }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <input type="text" id="memo" placeholder="ここに説明を入力">
+    <button onclick="saveAnnotation()">保存してダウンロード</button>
+    <button onclick="clearCanvas()" style="background:#6c757d;">やり直し</button>
+    <div id="status" class="msg">4隅をタップしてください。現在: <span id="count" class="counter">0</span> / 4 点</div>
+  </div>
+
+  <div class="canvas-container">
+    <canvas id="annoCanvas"></canvas>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('annoCanvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    let points = [];
+
+    // 画像URL
+    img.src = "http://localhost:8080/sample.jpg"; 
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+    };
+
+    canvas.addEventListener('mousedown', (e) => {
+      if (points.length >= 4) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      
+      points.push({
+        x: Math.round((e.clientX - rect.left) * scaleX),
+        y: Math.round((e.clientY - rect.top) * scaleY)
+      });
+      
+      document.getElementById('count').innerText = points.length;
+      draw();
+    });
+
+    function draw() {
+      ctx.drawImage(img, 0, 0);
+      
+      
+      points.forEach(p => {
+        ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, Math.max(img.width/100, 10), 0, Math.PI*2);
+        ctx.fill();
+      });
+
+      // 4点揃ったら枠を描画
+      if (points.length === 4) {
+        const xList = points.map(p => p.x);
+        const yList = points.map(p => p.y);
+        const minX = Math.min(...xList);
+        const minY = Math.min(...yList);
+        const maxX = Math.max(...xList);
+        const maxY = Math.max(...yList);
+
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = Math.max(img.width/200, 5);
+        ctx.strokeRect(minX, minY, maxX - minX, maxY - minY);
+      }
+    }
+
+    function saveAnnotation() {
+      if (points.length !== 4) { alert("4箇所クリックしてください"); return; }
+      
+      const memo = document.getElementById('memo').value || "なし";
+      
+      // 4点から xywh を計算
+      const xList = points.map(p => p.x);
+      const yList = points.map(p => p.y);
+      const minX = Math.min(...xList);
+      const minY = Math.min(...yList);
+      const width = Math.max(...xList) - minX;
+      const height = Math.max(...yList) - minY;
+
+      const iiif_xywh = `${minX},${minY},${width},${height}`;
+
+      // IIIF Manifestのtargetにそのまま貼れる形式で書き出し
+      const data = {
+        label: memo,
+        xywh: iiif_xywh,
+        full_target: `#xywh=${iiif_xywh}`,
+        canvas_width: img.width,
+        canvas_height: img.height,
+        raw_points: points,
+        timestamp: new Date().toLocaleString()
+      };
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${memo}_xywh.json`;
+      a.click();
+      
+      alert("IIIF用座標: " + iiif_xywh + " を保存しました！");
+    }
+
+    function clearCanvas() {
+      points = [];
+      document.getElementById('count').innerText = "0";
+      ctx.drawImage(img, 0, 0);
+      document.getElementById('memo').value = "";
+    }
+  </script>
+</body>
+</html>

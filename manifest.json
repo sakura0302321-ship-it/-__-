@@ -1,0 +1,50 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "http://localhost:8080/manifest.json",
+  "type": "Manifest",
+  "label": { "ja": [ "デジタルアーカイブ：デモ" ] },
+  "items": [
+    {
+      "id": "http://localhost:8080/canvas/1",
+      "type": "Canvas",
+      "height": 7990,
+      "width": 5327,
+      "items": [
+        {
+          "id": "http://localhost:8080/page/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:8080/anno/image",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "http://localhost:8080/sample.jpg",
+                "type": "Image",
+                "format": "image/jpeg",
+                "height": 7990,
+                "width": 5327
+              },
+              "target": "http://localhost:8080/canvas/1"
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "http://localhost:8080/page/2",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:8080/anno/1",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": { "type": "TextualBody", "value": "ピンクのカーネーション" },
+              "target": "http://localhost:8080/canvas/1#xywh=1508,2559,1936,1664"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mirador 閲覧ツール </title>
+  <style>
+    html, body, #mirador {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+  </style>
+  <script src="https://unpkg.com/mirador@latest/dist/mirador.min.js"></script>
+</head>
+<body>
+  <div id="mirador"></div>
+  <script>
+    var mirador = Mirador.viewer({
+      id: 'mirador',
+      windows: [{
+        loadedManifest: 'http://localhost:8080/manifest.json',
+        canvasIndex: 0,
+        sideBarOpen: true 
+      }],
+      osdConfig: {
+        crossOriginPolicy: 'Anonymous',
+        ajaxWithCredentials: false
+      }
+    });
+  </script>
+</body>
+</html>
