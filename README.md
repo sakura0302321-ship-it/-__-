@@ -1,4 +1,5 @@
-IIIF　デジタルアーカイブ：デモ![Uploading スクリーンショット 2026-03-06 143158.png…]()
+IIIF　デジタルアーカイブ：デモ
+<img width="1307" height="621" alt="スクリーンショット 2026-03-06 143003" src="https://github.com/user-attachments/assets/d99ca74d-4096-414c-895f-b7c349ac3411" />
 
 
 概要：
